@@ -1,29 +1,51 @@
-import * as React from "react";
+"use client";
 
-const Navbar: React.FunctionComponent = () => {
+import { useState, useEffect } from "react";
+import { Button } from "../ui/button";
+import { Session } from "next-auth";
+import { usePathname, useRouter } from "next/navigation";
+import { GiHealthDecrease } from "react-icons/gi";
+import { motion } from "framer-motion";
+export default function Navbar({ user }: { user: Session }) {
+  const router = useRouter();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="bg-gray-800">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-4">
-          <div className="text-2xl text-white font-bold">Logo</div>
-          <div className="flex items-center">
-            <a href="#" className="text-white">
-              Home
-            </a>
-            <a href="#" className="text-white ml-4">
-              About
-            </a>
-            <a href="#" className="text-white ml-4">
-              Services
-            </a>
-            <a href="#" className="text-white ml-4">
-              Contact
-            </a>
-          </div>
+    <motion.header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out mx-auto rounded-lg max-w-6xl
+        ${
+          isScrolled
+            ? "bg-card/70 dark:bg-gray-900/70 backdrop-blur-lg shadow-md mt-5"
+            : "w-full"
+        }`}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
+      <nav className=" flex justify-between w-full items-center py-5 px-10">
+        <div className="flex">
+          <GiHealthDecrease className="text-4xl" />
         </div>
-      </div>
-    </div>
+        {user?.user ? (
+          <Button
+            onClick={() => router.push("/dashboard/my-habits")}
+            className="px-7"
+          >
+            Dashboard
+          </Button>
+        ) : (
+          <Button className="px-7" onClick={() => router.push("/sign-in")}>
+            Login
+          </Button>
+        )}
+      </nav>
+    </motion.header>
   );
-};
-
-export default Navbar;
+}

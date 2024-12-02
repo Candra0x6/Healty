@@ -1,24 +1,19 @@
 import { ZodError } from "zod";
 import { ApiResponse } from "./src/utils/apiResponse";
 import { AppError } from "./src/utils/apiError";
-export async function middleware() {}
-export async function authMiddlewate() {
-  // const authHeader = request.headers.get("Authorization");
-  // try {
-  // 	const decode = jwt.verify(authHeader as string, process.env.JWT_SECRET as string);
-  // 	if (typeof decode !== "string" && (decode as jwt.JwtPayload).userId) {
-  // 		request.userId = (decode as jwt.JwtPayload).userId;
-  //         return request;
-  // 	} else {
-  //         return ApiResponse.error("Invalid token, Please logged In", 401);
-  //     }
-  // } catch (error : unknown) {
-  //     return errorHandler(error as Error);
-  // }
-}
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => !!token,
+  },
+});
+
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/api/:path*",
+    // Tambahkan path lain yang membutuhkan autentikasi
   ],
 };
 
