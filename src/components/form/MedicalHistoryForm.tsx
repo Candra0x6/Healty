@@ -16,7 +16,6 @@ import {
 import { Label } from "../ui/label";
 import { useState } from "react";
 import { useUserMedicalStore } from "@/src/store/user-medical-store";
-import { useRouter } from "next/navigation";
 
 // const createCharacter = async (data: {
 //   name: string;

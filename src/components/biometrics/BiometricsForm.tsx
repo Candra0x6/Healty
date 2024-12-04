@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Moon,
-  Sun,
   Heart,
   Ruler,
   Weight,
@@ -35,7 +32,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
 
 const formSchema = z.object({
   age: z.number().min(0).max(120),
