@@ -24,6 +24,8 @@ function validateLifestyleModifications(
   if (!Array.isArray(modifications)) return [];
 
   return modifications.map((mod) => ({
+    id: String(mod.id || ""),
+    isActive: Boolean(mod.isActive),
     activity: String(mod.activity),
     impactFactor: Number(mod.impactFactor) || 0,
     targetConditions: Array.isArray(mod.targetConditions)
