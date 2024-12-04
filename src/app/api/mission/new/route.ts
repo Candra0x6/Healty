@@ -45,7 +45,7 @@ export async function POST() {
             description: habit.targetConditions
               .map((condition) => condition)
               .join(", "),
-            xpReward: randomInt(10, 50),
+            xpReward: randomInt(40, 200),
             requiredCount: 1,
             currentCount: 0,
             habit: { connect: { id: habit.id } },

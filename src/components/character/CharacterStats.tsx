@@ -125,7 +125,7 @@ export default function CharacterStats({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-5 animate-pulse">
+      <div className="grid md:grid-cols-2 gap-5 animate-pulse">
         <div className="bg-card rounded-xl p-8 h-[400px]" />
         <div className="bg-card rounded-xl p-8 h-[400px]" />
       </div>
@@ -156,7 +156,7 @@ export default function CharacterStats({
     CHARACTER_ASSETS[character.gender]?.[character.level.currentLevel];
 
   return (
-    <div className="grid grid-cols-2 gap-5">
+    <div className="grid md:grid-cols-2 gap-5">
       <div className="bg-card rounded-xl p-8 h-fit flex items-center justify-center">
         <div className="w-full h-full flex flex-col items-center relative">
           <h1 className="text-3xl">{badgeSelected}</h1>
@@ -217,7 +217,7 @@ export default function CharacterStats({
               <CardContent className="p-0">
                 <motion.div
                   variants={containerVariants}
-                  className="grid grid-cols-8 gap-2"
+                  className="grid md:grid-cols-8 grid-cols-5 gap-2"
                 >
                   {badges?.map((badge) => (
                     <motion.div
@@ -225,7 +225,7 @@ export default function CharacterStats({
                       variants={itemVariants}
                       whileHover={{ scale: 1.1 }}
                       className={cn(
-                        "flex items-center justify-center rounded-lg p-2 aspect-square lg:text-2xl md:text-xl cursor-pointer",
+                        "flex items-center justify-center rounded-lg p-2 aspect-square lg:text-2xl  text-xl cursor-pointer",
                         badgeSelected === badge.symbol
                           ? "bg-gradient-to-br from-primary/40 to-cyan-700/40 text-white"
                           : "bg-gray-700/20 text-gray-600"

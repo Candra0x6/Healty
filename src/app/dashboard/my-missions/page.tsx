@@ -35,18 +35,18 @@ export default async function MyMission() {
     <>
       <DashboardNav title="Missions" />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
         <div className="col-span-1 gap-4 bg-card p-8 space-y-4 rounded-xl">
           <h1 className="font-bold text-2xl">Missions quest 🚀</h1>
           {mission?.data.map((mission: Mission, i: number) => {
             return <DailyGuest key={i} data={mission} />;
           })}
         </div>
-        <div className="col-span-1 bg-card rounded-xl p-8">
+        <div className="md:col-span-1 bg-card rounded-xl p-8">
           <h1 className="font-bold text-2xl mb-5">Daily checkin 🫡</h1>
           <DailyCheckin />
         </div>
-        <div className="col-span-2 bg-card w-full h-full rounded-xl">
+        <div className="md:col-span-2 bg-card w-full h-full rounded-xl">
           <AchivmentPart data={achievements?.data} />
         </div>
       </div>

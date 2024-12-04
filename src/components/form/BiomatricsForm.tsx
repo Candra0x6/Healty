@@ -99,7 +99,6 @@ export const BiomatricsForm: React.FC<BiometricsFormProps> = (props) => {
       };
       updateUserBiometrics(transformedData);
       props.handleContinue?.();
-      console.log(transformedData);
     } catch (error) {
       console.log(error);
     }

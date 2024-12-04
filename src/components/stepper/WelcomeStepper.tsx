@@ -1,103 +1,150 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Trophy } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "../../components/ui/progress";
 import { Input } from "../../components/ui/input";
-import { cn } from "@/lib/utils";
 import { BiomatricsForm } from "../form/BiomatricsForm";
 import { LifestyleForm } from "../form/LifestyleForm";
 import {
-  createMission,
   MedicalHistoryFormCheckbox,
+  createMission,
 } from "../form/MedicalHistoryForm";
 import { useUserMedicalStore } from "@/src/store/user-medical-store";
 import { useRouter } from "next/navigation";
 import { LoadingStethoscope } from "../skeleton/StethoschopeLoading";
-export const updateCharacterName = async (name: string) => {
+import {
+  BiometricsData,
+  LifestyleData,
+  MedicalHistory,
+} from "@/src/types/medicalBiometrics";
+import toast from "react-hot-toast";
+
+// Types
+interface ApiResponse {
+  ok: boolean;
+  status: number;
+  statusText: string;
+}
+
+// API Functions
+const makeApiCall = async (
+  endpoint: string,
+  method: string,
+  body?: object
+): Promise<ApiResponse> => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/character/change/name`,
+      `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
       {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-        }),
+        body: body ? JSON.stringify(body) : undefined,
       }
     );
+
+    if (!response.ok) {
+      throw new Error(
+        `API call failed: ${response.status} ${response.statusText}`
+      );
+    }
+
     return response;
   } catch (error) {
-    console.error("Error updating character name:", error);
+    console.error(`Error in API call to ${endpoint}:`, error);
     throw error;
   }
 };
 
-const initialAchivments = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/achievement/new`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  return response;
+const updateCharacterName = async (name: string, gender: string) => {
+  return makeApiCall("/api/character/change/name", "POST", { name, gender });
 };
+
+const initialAchievements = async () => {
+  return makeApiCall("/api/achievement/new", "POST");
+};
+
+const initialCheckin = async () => {
+  return makeApiCall("/api/checkin/new", "POST");
+};
+
+const submitMedicalData = async (data: {
+  biometrics: BiometricsData;
+  lifestyle: LifestyleData;
+  medicalHistory: MedicalHistory;
+}) => {
+  return makeApiCall("/api/prompt", "POST", data);
+};
+
+// Component
 export default function WelcomeStepper() {
   const [step, setStep] = useState(1);
-  const router = useRouter();
   const [characterName, setCharacterName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
   const { biometrics, lifestyle, medicalHistory } = useUserMedicalStore();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const fetchMedicalHistory = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/prompt`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            biometrics,
-            lifestyle,
-            medicalHistory,
-          }),
-        }
-      );
 
-      if (response.ok) {
-        const missionResponse = await createMission();
-        await updateCharacterName(characterName);
-
-        if (missionResponse?.ok) {
-          const achivment = await initialAchivments();
-          if (achivment?.ok) {
-            router.push("/dashboard/my-habits");
-          }
-        } else {
-          setIsLoading(false);
-          throw new Error("Mission response was not ok");
-        }
-      } else {
-        setIsLoading(false);
-        throw new Error("Network response was not ok");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error("Fetch error: ", error);
-    }
-  };
   const totalSteps = 4;
   const progress = (step / totalSteps) * 100;
+
+  const handleApiError = (error: Error, context: string) => {
+    setError(`Failed to ${context}. Please try again.`);
+    setIsLoading(false);
+  };
+
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Submit medical data
+      if (!biometrics || !lifestyle || !medicalHistory) {
+        toast.error("Biometrics data is missing");
+        throw new Error("Biometrics data is missing");
+      }
+
+      await submitMedicalData({
+        biometrics,
+        lifestyle,
+        medicalHistory,
+      });
+
+      // Create mission
+      const missionResponse = await createMission();
+      if (!missionResponse?.ok) {
+        toast.error("Failed to create mission");
+        throw new Error("Failed to create mission");
+      }
+
+      // Update character name
+      await updateCharacterName(characterName, biometrics.gender);
+
+      // Initialize achievements
+      const achievementResponse = await initialAchievements();
+      if (!achievementResponse?.ok) {
+        toast.error("Failed to initialize achievements");
+        throw new Error("Failed to initialize achievements");
+      }
+
+      // Initialize check-in
+      const checkinResponse = await initialCheckin();
+      if (!checkinResponse?.ok) {
+        toast.error("Failed to initialize check-in");
+        throw new Error("Failed to initialize check-in");
+      }
+
+      // Navigate to dashboard
+      router.push("/dashboard/my-habits");
+    } catch (error) {
+      handleApiError(error as Error, "complete setup");
+    }
+  };
 
   const handleContinue = () => {
     if (step < totalSteps) {
@@ -108,158 +155,131 @@ export default function WelcomeStepper() {
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
+      setError(null);
     }
   };
+
+  const renderStepHeader = (title: string, showBack = true) => (
+    <div className="flex items-center mb-8">
+      {showBack && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleBack}
+          className="hover:bg-card"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </Button>
+      )}
+      <h1 className="text-3xl font-bold text-gray-300 ml-4">{title}</h1>
+    </div>
+  );
+
+  const renderProgressBar = () => (
+    <div className="mb-8">
+      <motion.div
+        initial={{ width: 0 }}
+        animate={{ width: `${progress}%` }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+      >
+        <Progress value={progress} className="h-2 bg-primary" />
+      </motion.div>
+      <div className="flex justify-between mt-2 text-sm text-gray-400">
+        <span>
+          Step {step} of {totalSteps}
+        </span>
+        <span>{Math.round(progress)}% Complete</span>
+      </div>
+    </div>
+  );
+
+  const renderError = () =>
+    error && (
+      <div className="mb-4 p-4 bg-red-500/20 text-red-400 rounded-lg">
+        {error}
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
       <div className="max-w-xl mx-auto">
-        <div className="mb-8">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          >
-            <Progress value={progress} className="h-2 bg-primary" />
-          </motion.div>
-          <div className="flex justify-between mt-2 text-sm text-gray-400">
-            <span>
-              Step {step} of {totalSteps}
-            </span>
-            <span>{Math.round(progress)}% Complete</span>
-          </div>
-        </div>
+        {renderProgressBar()}
+        {renderError()}
 
         <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-300 ml-4">
-                  Biometrics
-                </h1>
-              </div>
-              <BiomatricsForm handleContinue={handleContinue} />
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center mb-8">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBack}
-                  className="hover:bg-card"
+          {isLoading ? (
+            <LoadingStethoscope />
+          ) : (
+            <>
+              {step === 1 && (
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <ArrowLeft className="w-6 h-6" />
-                </Button>
-                <h1 className="text-3xl font-bold text-gray-300 ml-4">
-                  Lifestyle
-                </h1>
-              </div>
-              <LifestyleForm handleContinue={handleContinue} />
-            </motion.div>
-          )}
+                  {renderStepHeader("Biometrics", false)}
+                  <BiomatricsForm handleContinue={handleContinue} />
+                </motion.div>
+              )}
 
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center mb-8">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBack}
-                  className="hover:bg-card"
+              {step === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <ArrowLeft className="w-6 h-6" />
-                </Button>
-                <h1 className="text-3xl font-bold text-gray-300 ml-4">
-                  Medical History
-                </h1>
-              </div>
-              <MedicalHistoryFormCheckbox
-                onContinue={handleContinue}
-                title="Continue"
-              />
-            </motion.div>
-          )}
+                  {renderStepHeader("Lifestyle")}
+                  <LifestyleForm handleContinue={handleContinue} />
+                </motion.div>
+              )}
 
-          {step === 4 && isLoading == false && (
-            <motion.div
-              key="step4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center mb-8">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleBack}
-                  className="hover:bg-card"
+              {step === 3 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <ArrowLeft className="w-6 h-6" />
-                </Button>
-                <h1 className="text-3xl font-bold text-gray-300 ml-4">
-                  Set Your Character
-                </h1>
-              </div>
-              {/* <div className="grid grid-cols-2 gap-4 mb-8">
-               {characters.map((character) => (
-                 <motion.button
-                   key={character.id}
-                   whileHover={{ scale: 1.05 }}
-                   whileTap={{ scale: 0.95 }}
-                   className={cn(
-                     "bg-gray-800 p-4 rounded-xl flex flex-col items-center gap-2 transition-colors",
-                     selectedCharacter === character.id
-                       ? "bg-green-500/20 text-green-400"
-                       : "hover:bg-gray-700"
-                   )}
-                   onClick={() => setSelectedCharacter(character.id)}
-                 >
-                   <span className="text-4xl">{character.avatar}</span>
-                   <span className="text-lg text-gray-300">
-                     {character.name}
-                   </span>
-                 </motion.button>
-               ))}
-             </div> */}
-              <Input
-                type="text"
-                placeholder="Enter your character name"
-                value={characterName}
-                onChange={(e) => setCharacterName(e.target.value)}
-                className="w-full bg-gray-800 text-gray-100 border-gray-700 mb-4"
-              />
-              <Button
-                onClick={fetchMedicalHistory}
-                className="w-full"
-                disabled={!characterName}
-              >
-                Submit
-              </Button>
-            </motion.div>
+                  {renderStepHeader("Medical History")}
+                  <MedicalHistoryFormCheckbox
+                    onContinue={handleContinue}
+                    title="Continue"
+                  />
+                </motion.div>
+              )}
+
+              {step === 4 && (
+                <motion.div
+                  key="step4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {renderStepHeader("Set Your Character")}
+                  <Input
+                    type="text"
+                    placeholder="Enter your character name"
+                    value={characterName}
+                    onChange={(e) => setCharacterName(e.target.value)}
+                    className="w-full bg-gray-800 text-gray-100 border-gray-700 mb-4"
+                  />
+                  <Button
+                    onClick={handleSubmit}
+                    className="w-full"
+                    disabled={!characterName}
+                  >
+                    Submit
+                  </Button>
+                </motion.div>
+              )}
+            </>
           )}
-          {isLoading && <LoadingStethoscope />}
         </AnimatePresence>
       </div>
     </div>

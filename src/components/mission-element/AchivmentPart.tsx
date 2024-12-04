@@ -11,6 +11,7 @@ import { RainbowButton } from "../ui/rainbow-button";
 import { Button } from "../ui/button";
 import { BadgeCharacter, UserAchievement } from "@prisma/client";
 import BoxRewardTrigger from "../reward/BoxOpen";
+import toast from "react-hot-toast";
 
 function AchivmentPart(props: { data: AchievementsResponse[] }) {
   const [selectedItem, setSelectedItem] = useState<AchievementsResponse | null>(
@@ -200,52 +201,60 @@ const DetailsCard = ({
       { message: string; data: BadgeCharacter }
     ]
   >;
-}) => (
-  <motion.div
-    variants={cardVariants}
-    initial="hidden"
-    animate="visible"
-    exit="exit"
-    className="rounded-xl "
-  >
-    <h3 className="mb-2 text-xl font-bold">{item.achievement.title}</h3>
-    <p className="mb-4 ">{item.achievement.description}</p>
-    <div className="flex w-full justify-center relative items-center">
-      <h1 className="absolute text-sm text-white z-10">
-        {item.currentProgress} / {item.achievement.requirement}
-      </h1>
-      <Progress
-        value={(item.currentProgress / item.achievement.requirement) * 100}
-      />
-    </div>
-    {item.currentProgress === item.achievement.requirement ? (
-      <BoxRewardTrigger
-        isClaimed={item.isClaimed}
-        cover={item.achievement.reward as string}
-        data={{ reward: item.achievement.reward as string, amount: 1 }}
-      >
-        <RainbowButton
-          onClick={async () =>
-            await handleClaim({
-              achivementId: item.achievement.id,
-              rewardName: item.achievement.title,
-              reward: item.achievement.reward as string,
-            })
-          }
-          disabled={item.isClaimed}
-          className={`mt-4 w-full ${item.isClaimed ? "opacity-50" : ""}`}
+}) => {
+  const [isClaimed, setIsClaimed] = useState(item.isClaimed);
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="rounded-xl "
+    >
+      <h3 className="mb-2 text-xl font-bold">{item.achievement.title}</h3>
+      <p className="mb-4 ">{item.achievement.description}</p>
+      <div className="flex w-full justify-center relative items-center">
+        <h1 className="absolute text-sm text-white z-10">
+          {item.currentProgress} / {item.achievement.requirement}
+        </h1>
+        <Progress
+          value={(item.currentProgress / item.achievement.requirement) * 100}
+        />
+      </div>
+      {item.currentProgress === item.achievement.requirement ? (
+        <BoxRewardTrigger
+          isClaimed={isClaimed}
+          cover={item.achievement.reward as string}
+          data={{ reward: item.achievement.reward as string, amount: 1 }}
         >
-          {item.isClaimed ? "Already Claimed" : "Claim"}{" "}
-          {item.achievement.reward}
-        </RainbowButton>
-      </BoxRewardTrigger>
-    ) : (
-      <Button
-        disabled={true}
-        className="mt-4 w-full bg-black opacity-40 hover:bg-black"
-      >
-        Claim {item.achievement.reward}
-      </Button>
-    )}
-  </motion.div>
-);
+          <RainbowButton
+            onClick={async () => {
+              try {
+                await handleClaim({
+                  achivementId: item.achievement.id,
+                  rewardName: item.achievement.title,
+                  reward: item.achievement.reward as string,
+                });
+                setIsClaimed(true);
+              } catch {
+                toast.error("Failed Claim Achievement");
+              }
+            }}
+            disabled={isClaimed}
+            className={`mt-4 w-full ${isClaimed ? "opacity-50" : ""}`}
+          >
+            {isClaimed ? "Already Claimed" : "Claim"} {item.achievement.reward}
+          </RainbowButton>
+        </BoxRewardTrigger>
+      ) : (
+        <Button
+          disabled={true}
+          className="mt-4 w-full bg-black opacity-40 hover:bg-black"
+        >
+          Claim {item.achievement.reward}
+        </Button>
+      )}
+    </motion.div>
+  );
+};

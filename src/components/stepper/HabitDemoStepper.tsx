@@ -11,29 +11,10 @@ import { cn } from "@/lib/utils";
 import { BiomatricsForm } from "../form/BiomatricsForm";
 import { LifestyleForm } from "../form/LifestyleForm";
 
-const habits = [
-  { id: "workout", icon: "💪", name: "Workout" },
-  { id: "read", icon: "📚", name: "Read" },
-  { id: "meditate", icon: "🧘", name: "Meditate" },
-  { id: "learn", icon: "🧠", name: "Learn a skill" },
-  { id: "sleep", icon: "😴", name: "Sleep early" },
-];
-
-const characters = [
-  { id: "warrior", name: "Warrior", avatar: "🦸‍♂️" },
-  { id: "mage", name: "Mage", avatar: "🧙‍♀️" },
-  { id: "rogue", name: "Rogue", avatar: "🥷" },
-  { id: "healer", name: "Healer", avatar: "🧚" },
-];
-
 export default function WelcomeStepper() {
   const [step, setStep] = useState(1);
   const [habitName, setHabitName] = useState("");
-  const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
   const [characterName, setCharacterName] = useState("");
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
-    null
-  );
   const [checkins, setCheckins] = useState(0);
   const [completed, setCompleted] = useState(false);
 

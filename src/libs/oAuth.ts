@@ -43,6 +43,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/sign-in",
+    signOut: "/setting",
   },
   secret: process.env.NEXT_AUTH_SECRET,
   callbacks: {
@@ -67,7 +68,6 @@ export const authOptions: NextAuthOptions = {
           token.characterId = dbUser.Character?.id as string;
         }
       }
-
       return token;
     },
     async session({ token, session }) {
@@ -78,10 +78,20 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email;
         session.user.image = token.picture;
       }
-
       return session;
     },
-    redirect() {
+    async redirect({ url, baseUrl }) {
+      // Handle sign-in
+      if (url.startsWith(baseUrl + "/sign-in")) {
+        return "/getting-started";
+      }
+
+      // Handle sign-out
+      if (url.startsWith(baseUrl + "/setting")) {
+        return "/sign-in"; // Or any other page you want to redirect to after sign-out
+      }
+
+      // Otherwise, return to base url
       return "/getting-started";
     },
   },

@@ -12,7 +12,6 @@ export default async function MyHabits() {
     }
   );
   const habits: lifestyleAIResponse[] = await response.json();
-  console.log(habits);
   return (
     <>
       <DashboardNav title="Habits" />

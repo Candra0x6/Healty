@@ -8,14 +8,7 @@ import {
   AvatarImage,
 } from "../../../components/ui/avatar";
 import { Card, CardContent } from "../../../components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../components/ui/table";
+
 import GoldMedal from "@/public/icon/medal/gold-medal.png";
 import SilverMedal from "@/public/icon/medal/silver-medal.png";
 import BronzeMedal from "@/public/icon/medal/bronze-medal.png";
@@ -51,10 +44,9 @@ export default function Component() {
   }, []);
   return (
     <>
-      <DashboardNav title="Habits" />
+      <DashboardNav title="Learderboard" />
 
-      <div className="min-h-screen text-white p-8">
-        <h1 className="text-3xl font-bold mb-6">Leaderboard</h1>
+      <div className="min-h-screen text-white">
         <div className="grid md:grid-cols-3 grid-cols-1 gap-4 mb-8">
           {leaderBoard?.map((player, index) => (
             <MotionCard
@@ -120,38 +112,6 @@ export default function Component() {
             </MotionCard>
           ))}
         </div>
-        <Card className="bg-card">
-          <CardContent className="p-4">
-            <h2 className="text-2xl font-bold mb-4">Global Ranking</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-white">Rank</TableHead>
-                  <TableHead className="text-white">Level</TableHead>
-                  <TableHead className="text-white">XP</TableHead>
-                  <TableHead className="text-white">Badge</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leaderBoard.slice(2).map((player, index) => (
-                  <motion.tr
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <TableCell>{index + 4}</TableCell>
-                    <TableCell className="font-medium">
-                      {player.Character.level.currentLevel}
-                    </TableCell>
-                    <TableCell>{player.Character.level.currentXP}</TableCell>
-                    <TableCell>{player.Character.symbol}</TableCell>
-                  </motion.tr>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
       </div>
     </>
   );

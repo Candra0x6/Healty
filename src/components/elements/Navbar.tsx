@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Session } from "next-auth";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GiHealthDecrease } from "react-icons/gi";
 import { motion } from "framer-motion";
 export default function Navbar({ user }: { user: Session }) {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);

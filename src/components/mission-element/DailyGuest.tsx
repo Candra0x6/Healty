@@ -5,6 +5,7 @@ import { Progress } from "../ui/progress";
 import { Mission } from "@prisma/client";
 import { Badge } from "../ui/badge";
 import BoxRewardTrigger from "../reward/BoxOpen";
+import toast from "react-hot-toast";
 interface IMissionCardProps {
   data: Mission;
 }
@@ -74,13 +75,17 @@ const DailyGuest: React.FunctionComponent<IMissionCardProps> = (props) => {
     <BoxRewardTrigger
       cover="🎁"
       data={{ reward: "XP 🛡️", amount: props.data.xpReward }}
-      isClaimed={props.data.isClaimed}
+      isClaimed={props.data.isDone == true && isClaimed == false ? false : true}
     >
       <motion.div
-        aria-disabled={isClaimed}
-        onClick={isClaimed ? undefined : handleUpdateLevel}
+        aria-disabled={isClaimed && !props.data.isDone}
+        onClick={
+          props.data.isDone == true && isClaimed == false
+            ? handleUpdateLevel
+            : () => toast.error("Mission not completed yet")
+        }
         className={`flex items-center gap-x-4 rounded-lg  ${
-          isClaimed ? "opacity-50" : ""
+          props.data.isDone == true && isClaimed == false ? "" : "opacity-50"
         }`}
       >
         <div className="flex flex-col w-[90%] space-y-2">
@@ -104,7 +109,7 @@ const DailyGuest: React.FunctionComponent<IMissionCardProps> = (props) => {
         <motion.div
           whileTap={{ scale: 0.95 }}
           whileHover={{ scale: 1.05 }}
-          {...(props.data.isDone
+          {...(props.data.isDone == true && isClaimed == false
             ? {
                 animate: {
                   y: ["0%", "-10%"],

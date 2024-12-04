@@ -44,7 +44,7 @@ export default function PlayerDetails() {
     getUserDetails();
   }, []);
   return (
-    <div className="max-w-2xl  mx-auto">
+    <div className="max-w-2xl mx-auto md:px-0 px-3">
       <div className="flex w-full justify-between py-10">
         <button
           onClick={() => window.history.back()}

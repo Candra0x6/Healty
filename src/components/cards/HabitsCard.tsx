@@ -73,8 +73,6 @@ const HabitCard: React.FunctionComponent<IHabitCardProps> = (props) => {
   };
   const updateMission = async (habitId: string) => {
     try {
-      console.log("Updating mission with habitId:", habitId);
-
       const payload = {
         habitId: habitId,
       };
@@ -145,7 +143,7 @@ const HabitCard: React.FunctionComponent<IHabitCardProps> = (props) => {
       className={`w-full h-fit p-7 relativetransition-all duration-300 ease-in-out relative`}
     >
       <div className="w-full left-1/2 bottom-0 absolute hover:opacity-100 opacity-0 animate-bounce ">
-        <div onClick={() => setIsActive(!isActive)} className="w-full">
+        <div onClick={() => setIsClicked(!isClicked)} className="w-full">
           <IoIosArrowDown
             className={`text-3xl ${isActive ? "rotate-180" : "rotate-0"}`}
           />
@@ -165,11 +163,10 @@ const HabitCard: React.FunctionComponent<IHabitCardProps> = (props) => {
             }}
             onCheckedChange={() => {
               setTimeout(() => {
-                if (isClicked == false && props.data.isActive == true) {
-                  setIsClicked(true);
+                if (isActive == true && props.data.isActive == true) {
+                  setIsActive(false);
                   handleUpdateHabit();
                 } else {
-                  setIsClicked(false);
                   setIsActive(false);
                 }
               }, 200);
@@ -179,7 +176,7 @@ const HabitCard: React.FunctionComponent<IHabitCardProps> = (props) => {
         </CardContent>
       </div>
       <AnimatePresence>
-        {isActive && (
+        {isClicked && (
           <motion.div
             initial={{ opacity: 0, height: 0, y: 20 }}
             animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -211,7 +208,7 @@ const HabitCard: React.FunctionComponent<IHabitCardProps> = (props) => {
               {(props.data.impactFactor * 100).toFixed(0)}% Effective
             </p>
 
-            <div className="flex justify-around mb-4">
+            <div className="md:flex justify-around mb-4">
               {(["overview", "details", "precautions"] as const).map((tab) => (
                 <Button
                   key={tab}

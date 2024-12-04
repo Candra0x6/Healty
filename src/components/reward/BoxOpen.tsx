@@ -29,6 +29,7 @@ export default function BoxRewardTrigger({
     amount: number;
   };
   isClaimed: boolean;
+  isDone? : boolean
 }) {
   const convertData = Object.values({ data });
   return (

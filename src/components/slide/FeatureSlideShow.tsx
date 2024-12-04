@@ -7,13 +7,14 @@ interface Feature {
   title: string;
   description: string;
   icon: React.ReactNode;
+  video?: string;
 }
 
 const features: Feature[] = [
   {
-    title: "Responsive Design",
+    title: "Personalized AI Insights",
     description:
-      "Our layouts adapt seamlessly to any screen size, ensuring a consistent user experience across all devices.",
+      "Tailored habits for your unique health journey. Get personalized insights and recommendations.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -31,11 +32,12 @@ const features: Feature[] = [
         <line x1="12" y1="17" x2="12" y2="21"></line>
       </svg>
     ),
+    video: "/video/Habit-Showcase.mp4",
   },
   {
-    title: "Fast Performance",
+    title: "Fun & Gamified",
     description:
-      "Experience lightning-quick load times and smooth interactions for an optimal user experience.",
+      "Earn XP, level up your character, and unlock achievements as you complete habits.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -51,11 +53,12 @@ const features: Feature[] = [
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
       </svg>
     ),
+    video: "/video/Mission-Showcase.mp4",
   },
   {
-    title: "SEO Optimized",
+    title: "Community Driven",
     description:
-      "Boost your search engine rankings with our SEO-friendly code and best practices implementation.",
+      "Stay motivated by competing on the leaderboard and sharing progress with others.",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -72,6 +75,7 @@ const features: Feature[] = [
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
     ),
+    video: "/video/Leaderboard-Showcase.mp4",
   },
 ];
 
@@ -81,7 +85,7 @@ export default function FeatureSlideshow() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % features.length);
-    }, 10000); // Change slide every 5 seconds
+    }, 11000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -135,13 +139,20 @@ export default function FeatureSlideshow() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -100 }}
               transition={{ duration: 0.5 }}
-              className="flex items-center justify-center p-8 h-full"
+              className="flex items-center justify-center w-full h-full"
             >
-              <div className="text-center">
-                <h2 className="mb-2 text-3xl font-bold ">
-                  {features[currentIndex].title}
-                </h2>
-              </div>
+              <video
+                loop
+                autoPlay
+                className="h-full w-full rounded-xl"
+                controls
+              >
+                <source
+                  className="w-full h-full"
+                  src={features[currentIndex].video}
+                  type="video/mp4"
+                />
+              </video>
             </motion.div>
           </AnimatePresence>
         </div>

@@ -415,7 +415,7 @@ model Character {
 model TargetDay {
   id          String  @id @default(cuid())
   userId      String
-  user        User    @relation(fields: [userId], references: [id])
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   dayNumber   Int // 1-5
   reward      String
   isCompleted Boolean @default(false)
@@ -429,7 +429,7 @@ model TargetDay {
 model CheckInPeriod {
   id            String   @id @default(cuid())
   userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id])
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   startDate     DateTime
   currentDay    Int      @default(1)
   completedDays Int      @default(0)
@@ -440,7 +440,7 @@ model CheckInPeriod {
 model CheckIn {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   dayNumber Int // 1-5
   date      DateTime @default(now())
   title     String?
@@ -454,7 +454,7 @@ model CheckIn {
 model Streak {
   id            String    @id @default(cuid())
   userId        String    @unique
-  user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   currentStreak Int       @default(0)
   longestStreak Int       @default(0)
   lastCheckIn   DateTime?
@@ -490,7 +490,7 @@ model UserAchievement {
 
   // Relations
   userId        String
-  user          User        @relation(fields: [userId], references: [id])
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   achievementId String
   achievement   Achievement @relation(fields: [achievementId], references: [id])
 

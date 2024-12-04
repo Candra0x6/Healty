@@ -6,18 +6,13 @@ import { NextRequest } from "next/server";
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log("Received PUT request to /api/mission/record");
-
     const body = await request.json();
-    console.log("Request body:", body);
 
     if (!body) {
-      console.error("No request body received");
       return ApiResponse.error("No request body received", 400);
     }
 
     if (!body.id) {
-      console.error("No habitId in request body:", body);
       return ApiResponse.error("Missing habitId in request body", 400);
     }
 

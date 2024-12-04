@@ -97,7 +97,7 @@ export default function GoogleAccountSettings() {
     getCharacterData();
   }, []);
   return (
-    <div className="min-h-screen flex items-center justify-center text-gray-100">
+    <div className="min-h-screen flex items-center justify-center text-gray-100 md:px-0 px-3">
       <motion.div
         variants={containerVariants}
         initial="hidden"

@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
     const body = await request.json();
 
-    if (!body || !body.name) {
+    if (!body || !body.name || !body.gender) {
       return ApiResponse.error("Missing name in request body", 400);
     }
 
@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
       },
       data: {
         name: body.name,
+        gender: body.gender,
       },
     });
 

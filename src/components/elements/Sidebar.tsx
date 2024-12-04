@@ -8,7 +8,21 @@ import { PiNotepadFill } from "react-icons/pi";
 import { RiVipCrown2Fill } from "react-icons/ri";
 import { RiHealthBookFill } from "react-icons/ri";
 import { usePathname, useRouter } from "next/navigation";
-
+export const dashboardMenuItems = [
+  { icon: TbHealthRecognition, text: "Habits", path: "/dashboard/my-habits" },
+  { icon: PiNotepadFill, text: "Mission", path: "/dashboard/my-missions" },
+  { icon: GiHealing, text: "Character", path: "/dashboard/my-character" },
+  {
+    icon: RiVipCrown2Fill,
+    text: "Leaderboard",
+    path: "/dashboard/leaderboard",
+  },
+  {
+    icon: RiHealthBookFill,
+    text: "Biometrics",
+    path: "/dashboard/my-biometrics",
+  },
+];
 const Sidebar = () => {
   const { data } = useSession();
   const router = useRouter();
@@ -21,21 +35,6 @@ const Sidebar = () => {
     },
   };
 
-  const menuItems = [
-    { icon: TbHealthRecognition, text: "Habits", path: "/dashboard/my-habits" },
-    { icon: PiNotepadFill, text: "Mission", path: "/dashboard/my-missions" },
-    { icon: GiHealing, text: "Character", path: "/dashboard/my-character" },
-    {
-      icon: RiVipCrown2Fill,
-      text: "Leaderboard",
-      path: "/dashboard/leaderboard",
-    },
-    {
-      icon: RiHealthBookFill,
-      text: "Biometrics",
-      path: "/dashboard/my-biometrics",
-    },
-  ];
   return (
     <motion.div
       initial="closed"
@@ -44,13 +43,13 @@ const Sidebar = () => {
       variants={sidebarVariants}
       className="overflow-hidden backdrop-blur-xl"
     >
-      <div className="flex h-full flex-col">
+      <div className=" h-full flex-col md:flex">
         <nav className="flex-grow">
           <div className="flex w-full justify-center py-4">
             <GiHealthDecrease className="text-4xl" />
           </div>
           <ul className="space-y-4">
-            {menuItems.map((item, index) => (
+            {dashboardMenuItems.map((item, index) => (
               <motion.li
                 onClick={() => router.push(item.path)}
                 key={index}
