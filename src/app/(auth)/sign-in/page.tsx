@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, Mail } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Navbar from "@/src/components/elements/Navbar";
 import { Session } from "next-auth";
