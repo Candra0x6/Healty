@@ -39,75 +39,6 @@ export default function LoginPage() {
             Sign in to your account
           </h2>
 
-          <form className="mt-8 space-y-6">
-            <div className="space-y-4 rounded-md shadow-sm">
-              <div>
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="email-address"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="block w-full rounded-lg border border-gray-700 bg-gray-800 p-2.5 pl-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Email address"
-                  />
-                </div>
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Lock className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="block w-full rounded-lg border border-gray-700 bg-gray-800 p-2.5 pl-10 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                    placeholder="Password"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative flex w-full justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Lock
-                    className="h-5 w-5 text-blue-500 group-hover:text-blue-400"
-                    aria-hidden="true"
-                  />
-                </span>
-                Sign in
-              </button>
-            </div>
-          </form>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-gray-900 px-2 text-gray-400">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
           <div>
             <button
               type="button"
@@ -160,13 +91,6 @@ export default function LoginPage() {
               </button>
             )}
           </div>
-
-          <p className="mt-2 text-center text-sm text-gray-400">
-            Don&apos;t have an account?{" "}
-            <button className="font-medium text-blue-500 hover:text-blue-400">
-              Sign up
-            </button>
-          </p>
         </div>
 
         {/* <Dialog open={isSignUpOpen} onClose={() => setIsSignUpOpen(false)} className="relative z-50">
