@@ -31,7 +31,6 @@ export default function LoginPage() {
   return (
     <>
       <Navbar user={session as Session} />
-
       <div className="flex min-h-screen flex-col items-center justify-center p-4 text-white">
         <div className="w-full max-w-md space-y-8 rounded-xl bg-gray-900 p-8 shadow-2xl">
           <h2 className="text-center text-3xl font-extrabold">

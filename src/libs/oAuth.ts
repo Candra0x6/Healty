@@ -82,17 +82,17 @@ export const authOptions: NextAuthOptions = {
     },
     async redirect({ url, baseUrl }) {
       // Handle sign-in
-      if (url.startsWith(baseUrl + "/sign-in")) {
-        return "/getting-started";
-      }
 
-      // Handle sign-out
       if (url.startsWith(baseUrl + "/setting")) {
         return "/sign-in"; // Or any other page you want to redirect to after sign-out
       }
 
-      // Otherwise, return to base url
+      if (url.startsWith(baseUrl + "/sign-in")) {
+        return "/getting-started";
+      }
       return "/getting-started";
+
+      // Handle sign-out
     },
   },
 };
