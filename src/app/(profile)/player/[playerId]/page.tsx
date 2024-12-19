@@ -30,7 +30,7 @@ export default async function PlayerDetails({
 }: {
   params: { playerId: string };
 }) {
-  const user = await getProfileDetails({ userId: params.playerId });
+  const user = await getProfileDetails({ userId: await params.playerId });
   return (
     <div className="max-w-2xl mx-auto md:px-0 px-3">
       <div className="flex w-full justify-between py-10">
