@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   title: "Character",
   description: "Character Details",
 };
+export const dynamic = "force-dynamic";
+
 const getCharacterBadgeItems = cache(() => badgeDetails());
 const getCharacterDetailsItems = cache(() => characterDetails());
 

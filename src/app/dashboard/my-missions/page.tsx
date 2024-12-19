@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: "My Missions - Healthy",
   description: "View your missions",
 };
+export const dynamic = "force-dynamic";
 
 const getMissionItems = cache(() => detailMissions());
 export type MissionResponse = Awaited<ReturnType<typeof getMissionItems>>;

@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "My Habits - Healthy",
   description: "View your habits",
 };
+export const dynamic = "force-dynamic";
 
 const getLifestyleItems = cache(() => detailLifestyle());
 export type lifestyleResponse = Awaited<ReturnType<typeof getLifestyleItems>>;

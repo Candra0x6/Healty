@@ -25,12 +25,11 @@ export const metadata = {
   title: "Player Details",
   description: "Player Details",
 };
-export default async function PlayerDetails({
-  params,
-}: {
-  params: { playerId: string };
-}) {
-  const user = await getProfileDetails({ userId: await params.playerId });
+type tParams = Promise<{ playerId: string }>;
+
+export default async function PlayerDetails(props: { params: tParams }) {
+  const playerId = (await props.params).playerId;
+  const user = await getProfileDetails({ userId: playerId });
   return (
     <div className="max-w-2xl mx-auto md:px-0 px-3">
       <div className="flex w-full justify-between py-10">

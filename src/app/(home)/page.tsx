@@ -120,7 +120,7 @@ export default function Home() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const router = useRouter();
   if (session) {
-    router.push("/dashboard");
+    router.push("/dashboard/my-habits");
   }
   const handleConfettiOnElement = (event: React.MouseEvent) => {
     const { clientX, clientY } = event; // Koordinat klik
