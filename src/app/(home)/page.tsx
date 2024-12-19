@@ -17,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { RxDoubleArrowDown } from "react-icons/rx";
 import { useRouter } from "next/navigation";
+
 export default function Home() {
   const { data: session } = useSession();
 
