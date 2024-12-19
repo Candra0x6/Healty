@@ -19,6 +19,7 @@ import { RxDoubleArrowDown } from "react-icons/rx";
 import { useRouter } from "next/navigation";
 export default function Home() {
   const { data: session } = useSession();
+
   const faqs = [
     {
       question: "What is Healthy?",
@@ -118,6 +119,9 @@ export default function Home() {
   ];
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const router = useRouter();
+  if (session) {
+    router.push("/dashboard");
+  }
   const handleConfettiOnElement = (event: React.MouseEvent) => {
     const { clientX, clientY } = event; // Koordinat klik
     const { innerWidth, innerHeight } = window;

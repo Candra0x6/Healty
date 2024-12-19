@@ -1,13 +1,17 @@
 "use client";
 import { CheckCircle2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TargetDay } from "@prisma/client";
 import toast from "react-hot-toast";
-export default function DailyCheckin() {
-  const [targetDays, setTargetDays] = useState<TargetDay[]>([]);
+export default function DailyCheckin({
+  data,
+}: {
+  data: TargetDay[] | undefined;
+}) {
+  const [targetDays] = useState<TargetDay[] | undefined>(data);
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -25,44 +29,6 @@ export default function DailyCheckin() {
         ease: "easeInOut",
       },
     },
-  };
-
-  // const initilizeCheckin = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${process.env.NEXT_PUBLIC_API_URL}/api/checkin/new`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     const data = await response.json();
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.error("Error getting character data:", error);
-  //     throw error;
-  //   }
-  // };
-
-  const getTargetDays = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/checkin`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setTargetDays(data.data);
-    } catch (error) {
-      console.error("Error getting character data:", error);
-      throw error;
-    }
   };
 
   const updateCheckin = async () => {
@@ -90,43 +56,41 @@ export default function DailyCheckin() {
     }
   };
 
-  useEffect(() => {
-    getTargetDays();
-  }, []);
   return (
     <Card className="p-0">
       <CardContent className="p-0">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {targetDays.map((day) => (
-            <motion.div
-              onClick={updateCheckin}
-              key={day.id}
-              variants={itemVariants}
-              whileHover={{ scale: 1.05 }}
-              className={cn(
-                "relative rounded-lg p-4",
-                day.isCompleted
-                  ? "bg-green-500/20 text-green-400"
-                  : "bg-gray-700/20 text-gray-400"
-              )}
-            >
+          {targetDays &&
+            targetDays.map((day) => (
               <motion.div
-                variants={floatVariants}
-                animate="float"
-                className="absolute right-2 top-2 text-2xl"
+                onClick={updateCheckin}
+                key={day.id}
+                variants={itemVariants}
+                whileHover={{ scale: 1.05 }}
+                className={cn(
+                  "relative rounded-lg p-4",
+                  day.isCompleted
+                    ? "bg-green-500/20 text-green-400"
+                    : "bg-gray-700/20 text-gray-400"
+                )}
               >
-                {day.reward}
+                <motion.div
+                  variants={floatVariants}
+                  animate="float"
+                  className="absolute right-2 top-2 text-2xl"
+                >
+                  {day.reward}
+                </motion.div>
+                <div className="space-y-2">
+                  <div className="text-sm">Day {day.dayNumber}</div>
+                  <CheckCircle2
+                    className={`h-5 w-5 ${
+                      day.isCompleted ? "text-green-400" : "text-gray-600"
+                    }`}
+                  />
+                </div>
               </motion.div>
-              <div className="space-y-2">
-                <div className="text-sm">Day {day.dayNumber}</div>
-                <CheckCircle2
-                  className={`h-5 w-5 ${
-                    day.isCompleted ? "text-green-400" : "text-gray-600"
-                  }`}
-                />
-              </div>
-            </motion.div>
-          ))}
+            ))}
         </div>
       </CardContent>
     </Card>

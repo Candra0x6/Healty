@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils";
 const DetailProfile: React.FunctionComponent<{ data: UserDetails }> = (
   props
 ) => {
-  console.log(props);
   return (
     <div className="">
       <motion.div

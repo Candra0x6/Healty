@@ -18,7 +18,6 @@ export async function GET() {
     },
   });
 
-  console.log(session.user.id);
   return ApiResponse.success(
     {
       message: "Achivements data retrieved successfully",

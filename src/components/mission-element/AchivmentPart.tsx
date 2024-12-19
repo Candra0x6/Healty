@@ -13,7 +13,7 @@ import { BadgeCharacter, UserAchievement } from "@prisma/client";
 import BoxRewardTrigger from "../reward/BoxOpen";
 import toast from "react-hot-toast";
 
-function AchivmentPart(props: { data: AchievementsResponse[] }) {
+function AchivmentPart(props: { data: AchievementsResponse[] | undefined }) {
   const [selectedItem, setSelectedItem] = useState<AchievementsResponse | null>(
     null
   );

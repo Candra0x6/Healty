@@ -1,23 +1,31 @@
 import HabitCard from "@/src/components/cards/HabitsCard";
 import DashboardNav from "@/src/components/elements/DashboardNav";
 import { lifestyleAIResponse } from "@/src/types/genrateResponse";
-import { headers } from "next/headers";
+import { Metadata } from "next";
+import { cache, Suspense } from "react";
+import detailLifestyle from "@/src/libs/fetch/lifestyle";
+
+export const metadata: Metadata = {
+  title: "My Habits - Healthy",
+  description: "View your habits",
+};
+
+const getLifestyleItems = cache(() => detailLifestyle());
+export type lifestyleResponse = Awaited<ReturnType<typeof getLifestyleItems>>;
 
 export default async function MyHabits() {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/lifestyle`,
-    {
-      method: "GET",
-      headers: await headers(),
-    }
-  );
-  const habits: lifestyleAIResponse[] = await response.json();
+  const habits: lifestyleAIResponse[] | undefined = await getLifestyleItems();
+  console.log(habits);
   return (
     <>
       <DashboardNav title="Habits" />
       <div className="grid grid-cols-2 grid-flow-row gap-8">
-        {Array.isArray(habits) &&
-          habits.map((lifestyle, i) => <HabitCard data={lifestyle} key={i} />)}
+        <Suspense fallback={<div>Loading...</div>}>
+          {Array.isArray(habits) &&
+            habits.map((lifestyle, i) => (
+              <HabitCard data={lifestyle} key={i} />
+            ))}
+        </Suspense>
       </div>
     </>
   );

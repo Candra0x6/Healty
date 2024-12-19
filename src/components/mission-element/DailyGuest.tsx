@@ -89,7 +89,7 @@ const DailyGuest: React.FunctionComponent<IMissionCardProps> = (props) => {
         }`}
       >
         <div className="flex flex-col w-[90%] space-y-2">
-          <h1>{props.data.title}</h1>
+          <h1 className="text-left">{props.data.title}</h1>
           <Progress
             value={(props.data.currentCount / props.data.requiredCount) * 100}
             className="h-3"

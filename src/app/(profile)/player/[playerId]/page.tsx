@@ -1,5 +1,6 @@
-"use client";
 import DetailProfile from "@/src/components/profile/DetailProfile";
+import BackButton from "@/src/components/units/BackButton";
+import { detailPlayer } from "@/src/libs/fetch/profile";
 import {
   Achievement,
   Character,
@@ -10,51 +11,34 @@ import {
   User,
   UserAchievement,
 } from "@prisma/client";
-import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { TbArrowBackUp } from "react-icons/tb";
+import React, { cache, Suspense } from "react";
 export type UserDetails = User & { Character: Character & { level: Level } } & {
   healthAnalysis: HealthAnalysis & {
     lifestyleModifications: LifestyleModification[] & { mission: Mission[] };
   };
 } & { UserAchievement: (UserAchievement & { achievement: Achievement })[] };
-export default function PlayerDetails() {
-  const { playerId } = useParams();
-  const [user, setUser] = useState<UserDetails>();
-  const getUserDetails = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/user/${playerId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      setUser(data.data);
-    } catch (error) {
-      console.error("Error getting player data:", error);
-      throw error;
-    }
-  };
+const getProfileDetails = cache(({ userId }: { userId: string }) =>
+  detailPlayer({ userId })
+);
 
-  useEffect(() => {
-    getUserDetails();
-  }, []);
+export const metadata = {
+  title: "Player Details",
+  description: "Player Details",
+};
+export default async function PlayerDetails({
+  params,
+}: {
+  params: { playerId: string };
+}) {
+  const user = await getProfileDetails({ userId: params.playerId });
   return (
     <div className="max-w-2xl mx-auto md:px-0 px-3">
       <div className="flex w-full justify-between py-10">
-        <button
-          onClick={() => window.history.back()}
-          className="hover:bg-card flex gap-x-2 items-center font-bold py-2 px-5 rounded-xl hover:text-primary "
-        >
-          <TbArrowBackUp size={24} />
-          Back
-        </button>
+        <BackButton />
       </div>
-      <DetailProfile data={user as UserDetails} />
+      <Suspense fallback={<div>Loading...</div>}>
+        <DetailProfile data={user as unknown as UserDetails} />
+      </Suspense>
     </div>
   );
 }

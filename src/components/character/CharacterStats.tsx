@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { BadgeCharacter, Character, Level } from "@prisma/client";
+import toast from "react-hot-toast";
 
 // Define base path for assets
 const BASE_PATH = "/image/character-assets";
@@ -29,17 +30,18 @@ const CHARACTER_ASSETS = {
   },
 } as const;
 
-type CharacterLevel = Character & { level: Level };
+export type CharacterLevel = Character & { level: Level };
+
+type CharacterStatsProps = {
+  badges: BadgeCharacter[] | undefined;
+  character: CharacterLevel | undefined;
+};
 
 export default function CharacterStats({
-  data: badges,
-}: {
-  data: BadgeCharacter[];
-}) {
-  const [character, setCharacter] = useState<CharacterLevel | null>(null);
+  badges,
+  character,
+}: CharacterStatsProps) {
   const [badgeSelected, setBadgeSelected] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const updateUseBadge = async (badgeName: string, badge: string) => {
     try {
@@ -64,46 +66,10 @@ export default function CharacterStats({
       const badgeData = await response.json();
       setBadgeSelected(badgeData.data.symbol);
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "Failed to update badge"
-      );
+      console.error("Error updating badge:", error);
+      toast.error("Failed to update badge");
     }
   };
-
-  const getCharacterData = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/character`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch character data");
-      }
-
-      const data = await response.json();
-      setCharacter(data.data);
-      setBadgeSelected(data.data.symbol);
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch character data"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getCharacterData();
-  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -123,33 +89,6 @@ export default function CharacterStats({
     },
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid md:grid-cols-2 gap-5 animate-pulse">
-        <div className="bg-card rounded-xl p-8 h-[400px]" />
-        <div className="bg-card rounded-xl p-8 h-[400px]" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="grid place-items-center p-8 bg-card rounded-xl">
-        <p className="text-red-500">Error: {error}</p>
-        <button
-          onClick={getCharacterData}
-          className="mt-4 px-4 py-2 bg-primary rounded-lg hover:bg-primary/90"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  if (!character) {
-    return null;
-  }
-
   const characterImage =
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -166,7 +105,7 @@ export default function CharacterStats({
                 className="w-1/2 h-1/2 bg-gradient-to-tr from-blue-500 to-teal-500 rounded-full blur-3xl"
                 style={{
                   animationDelay: "0.5s",
-                  opacity: character.level.currentLevel * 0.5,
+                  opacity: (character?.level?.currentLevel ?? 0) * 0.5,
                 }}
               />
             </div>
@@ -174,23 +113,24 @@ export default function CharacterStats({
               <Image
                 src={characterImage}
                 alt={`Level ${
-                  character.level.currentLevel
-                } ${character.gender.toLowerCase()} character`}
+                  character?.level.currentLevel
+                } ${character?.gender.toLowerCase()} character`}
                 className="z-10"
+                loading="lazy"
                 width={150}
                 height={150}
               />
             )}
           </div>
           <div className="w-full flex flex-col items-center space-y-2">
-            <h1 className="font-bold">Level {character.level.currentLevel}</h1>
+            <h1 className="font-bold">Level {character?.level.currentLevel}</h1>
             <Progress
               className="w-full"
-              value={character.level.percentageToNextLevel}
+              value={character?.level.percentageToNextLevel}
             />
             <div className="flex justify-between w-full">
-              <p className="text-xs">{character.level.currentXP} XP</p>
-              <p className="text-xs">{character.level.requiredXP} XP</p>
+              <p className="text-xs">{character?.level.currentXP} XP</p>
+              <p className="text-xs">{character?.level.requiredXP} XP</p>
             </div>
           </div>
         </div>
@@ -204,7 +144,7 @@ export default function CharacterStats({
           className="space-y-8"
         >
           <motion.div variants={itemVariants} className="flex">
-            <h1 className="font-bold text-4xl">Hi, {character.name}</h1>
+            <h1 className="font-bold text-4xl">Hi, {character?.name}</h1>
           </motion.div>
 
           <motion.div variants={itemVariants}>
